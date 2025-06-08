@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章详情</title>
+    <style>
+        /* 这里可以复用index.html中的样式，或者将样式提取到一个单独的CSS文件中 */
+        @import url('styles.css'); /* 假设我们将共享样式放在styles.css文件中 */
+
+        /* 文章详情页特有样式 */
+        .article-content {
+            margin-top: 30px;
+            font-size: 16px;
+            color: #555;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="articleTitle"></h1>
+        <div class="article-date" id="articleDate"></div>
+        <div class="article-content" id="articleContent"></div>
+        <a href="index.html" class="back-link">返回首页</a>
+    </div>
+
+    <script>
+        // 获取URL中的文章ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const articleId = urlParams.get('id');
+
+        // 文章数据（应与首页一致）
+        const articles = [
+            { id: 1, title: "如何学习前端开发", date: "2025-06-01", content: "前端开发需要掌握HTML、CSS和JavaScript..." },
+            { id: 2, title: "Python入门指南", date: "2025-05-15", content: "Python是一种简单易学的编程语言..." },
+            { id: 3, title: "数据库设计原则", date: "2025-04-20", content: "良好的数据库设计需要考虑范式..." }
+            // ...更多文章
+        ];
+
+        // 渲染文章内容
+        function renderArticle() {
+            const article = articles.find(a => a.id === parseInt(articleId));
+            
+            if (article) {
+                document.getElementById('articleTitle').innerText = article.title;
+                document.getElementById('articleDate').innerText = `发布于：${article.date}`;
+                document.getElementById('articleContent').innerText = article.content;
+                document.title = article.title;
+            } else {
+                // 这里可以添加处理文章不存在的逻辑，比如显示一个错误消息
+                alert('文章不存在');
+                window.location.href = 'index.html'; // 或者重定向回首页
+            }
+        }
+
+        renderArticle();
+    </script>
+</body>
+</html>
