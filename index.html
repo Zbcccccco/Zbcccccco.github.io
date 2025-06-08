@@ -1,129 +1,92 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zcode - 技术博客</title>
+    <title>Zcode</title>
     <style>
-        * {
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #f5f5f5;
-        }
-        .app {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid #eee;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        header h1 {
-            color: #4285f4;
-            font-size: 2.5rem;
+            background-color: #f4f4f4;
         }
         .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .article-list {
+            list-style: none;
+            padding: 0;
+        }
+        .article-item {
             display: flex;
-            margin-top: 30px;
-            gap: 30px;
-        }
-        .post-form {
-            flex: 1;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .post-form input,
-        .post-form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .post-form textarea {
-            min-height: 200px;
-            resize: vertical;
-        }
-        .post-form button {
-            padding: 10px 20px;
-            background: #4285f4;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        .post-form button:hover {
-            background: #3367d6;
-        }
-        .posts {
-            flex: 2;
-        }
-        .post {
-            background: white;
-            padding: 20px;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            background-color: #fafafa;
         }
-        .post h2 {
-            color: #4285f4;
-            margin-bottom: 10px;
+        .article-title {
+            font-size: 18px;
+            text-decoration: none;
+            color: #007bff;
+            flex-grow: 1;
+        }
+        .article-date {
+            font-size: 14px;
+            color: #999;
+        }
+        @media (max-width: 600px) {
+            .article-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .article-date {
+                margin-top: 5px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <header>
-            <h1>Zcode</h1>
-        </header>
-        <div class="container">
-            <form class="post-form" id="postForm">
-                <input type="text" id="title" placeholder="文章标题" required>
-                <textarea id="content" placeholder="文章内容" required></textarea>
-                <button type="submit">发布文章</button>
-            </form>
-            <div class="posts" id="postsContainer">
-                <!-- 文章将在这里动态添加 -->
-            </div>
-        </div>
+    <div class="container">
+        <h1>Zcode</h1>
+        <ul class="article-list" id="articleList">
+            <!-- 文章列表将通过JavaScript动态加载 -->
+        </ul>
     </div>
 
     <script>
-        document.getElementById('postForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const title = document.getElementById('title').value;
-            const content = document.getElementById('content').value;
-            
-            if(title && content) {
-                const postElement = document.createElement('div');
-                postElement.className = 'post';
-                postElement.innerHTML = `
-                    <h2>${title}</h2>
-                    <p>${content}</p>
-                `;
-                
-                document.getElementById('postsContainer').prepend(postElement);
-                
-                // 清空表单
-                document.getElementById('title').value = '';
-                document.getElementById('content').value = '';
-            }
-        });
+        // 文章数据
+        const articles = [
+            { id: 1, title: "如何学习前端开发", date: "2025-06-01" },
+            { id: 2, title: "Python入门指南", date: "2025-05-15" },
+            { id: 3, title: "数据库设计原则", date: "2025-04-20" }
+            // ...更多文章
+        ];
+
+        // 渲染文章列表
+        function renderArticleList() {
+            const articleList = document.getElementById('articleList');
+            articleList.innerHTML = articles.map(article => `
+                <li class="article-item">
+                    <a href="article.html?id=${article.id}" class="article-title">${article.title}</a>
+                    <span class="article-date">${article.date}</span>
+                </li>
+            `).join('');
+        }
+
+        renderArticleList();
     </script>
 </body>
 </html>
