@@ -2,89 +2,156 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zcode</title>
-    <style>
-        body {
-            font-family: 'Microsoft YaHei', sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
-        .article-list {
-            list-style: none;
-            padding: 0;
-        }
-        .article-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            background-color: #fafafa;
-        }
-        .article-title {
-            font-size: 18px;
-            text-decoration: none;
-            color: #007bff;
-            flex-grow: 1;
-        }
-        .article-date {
-            font-size: 14px;
-            color: #999;
-        }
-        @media (max-width: 600px) {
-            .article-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .article-date {
-                margin-top: 5px;
-            }
-        }
-    </style>
+    <title>Great Minds Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Zcode</h1>
-        <ul class="article-list" id="articleList">
-            <!-- 文章列表将通过JavaScript动态加载 -->
-        </ul>
-    </div>
+    <header class="site-header">
+        <div class="header-inner">
+            <h1 class="site-title">Great Minds Gallery</h1>
+            <p class="site-subtitle">A Quiet Tribute to the Giants of Science</p>
+            <p class="site-subtitle-cn">致敬科学史上的伟大头脑</p>
+        </div>
+    </header>
+
+    <main class="site-main">
+        <section class="intro">
+            <p>
+                这里收录了一些科学史上的伟大人物：他们的思考改变了世界。
+                画廊以简约而略带古典的风格呈现，仿佛翻开一册陈年手稿。
+            </p>
+        </section>
+
+        <section class="gallery">
+            <!-- Newton -->
+            <figure class="gallery-item">
+                <div class="frame">
+                    <img src="images/newton.jpg" alt="Isaac Newton">
+                </div>
+                <figcaption>
+                    <span class="name-en">Isaac Newton</span>
+                    <span class="name-cn">艾萨克·牛顿</span>
+                    <span class="years">1643 – 1727</span>
+                    <span class="note">Classical mechanics, calculus, optics</span>
+                </figcaption>
+            </figure>
+
+            <!-- Emmy Noether -->
+            <figure class="gallery-item">
+                <div class="frame">
+                    <img src="images/noether.jpg" alt="Emmy Noether">
+                </div>
+                <figcaption>
+                    <span class="name-en">Emmy Noether</span>
+                    <span class="name-cn">埃米·诺特</span>
+                    <span class="years">1882 – 1935</span>
+                    <span class="note">Noether’s theorem, abstract algebra</span>
+                </figcaption>
+            </figure>
+
+            <!-- Euler -->
+            <figure class="gallery-item">
+                <div class="frame">
+                    <img src="images/euler.jpg" alt="Leonhard Euler">
+                </div>
+                <figcaption>
+                    <span class="name-en">Leonhard Euler</span>
+                    <span class="name-cn">莱昂哈德·欧拉</span>
+                    <span class="years">1707 – 1783</span>
+                    <span class="note">Analysis, number theory, graph theory</span>
+                </figcaption>
+            </figure>
+
+            <!-- Gauss -->
+            <figure class="gallery-item">
+                <div class="frame">
+                    <img src="images/gauss.jpg" alt="Carl Friedrich Gauss">
+                </div>
+                <figcaption>
+                    <span class="name-en">Carl F. Gauss</span>
+                    <span class="name-cn">卡尔·弗里德里希·高斯</span>
+                    <span class="years">1777 – 1855</span>
+                    <span class="note">“Prince of Mathematicians”</span>
+                </figcaption>
+            </figure>
+
+            <!-- Bernoulli -->
+            <figure class="gallery-item">
+                <div class="frame">
+                    <img src="images/bernoulli.jpg" alt="Bernoulli">
+                </div>
+                <figcaption>
+                    <span class="name-en">Johann / Jacob Bernoulli</span>
+                    <span class="name-cn">伯努利家族</span>
+                    <span class="years">17 – 18th century</span>
+                    <span class="note">Calculus, probability, fluid dynamics</span>
+                </figcaption>
+            </figure>
+
+            <!-- Galois -->
+            <figure class="gallery-item">
+                <div class="frame">
+                    <img src="images/galois.jpg" alt="Évariste Galois">
+                </div>
+                <figcaption>
+                    <span class="name-en">Évariste Galois</span>
+                    <span class="name-cn">埃瓦里斯特·伽罗瓦</span>
+                    <span class="years">1811 – 1832</span>
+                    <span class="note">Galois theory, group theory</span>
+                </figcaption>
+            </figure>
+
+            <!-- Yang Zhenning -->
+            <figure class="gallery-item">
+                <div class="frame">
+                    <img src="images/yang.jpg" alt="Chen-Ning Yang">
+                </div>
+                <figcaption>
+                    <span class="name-en">Chen-Ning Yang</span>
+                    <span class="name-cn">杨振宁</span>
+                    <span class="years">1922 – </span>
+                    <span class="note">Gauge theory, parity violation</span>
+                </figcaption>
+            </figure>
+
+            <!-- Feynman -->
+            <figure class="gallery-item">
+                <div class="frame">
+                    <img src="images/feynman.jpg" alt="Richard Feynman">
+                </div>
+                <figcaption>
+                    <span class="name-en">Richard Feynman</span>
+                    <span class="name-cn">理查德·费曼</span>
+                    <span class="years">1918 – 1988</span>
+                    <span class="note">QED, Feynman diagrams</span>
+                </figcaption>
+            </figure>
+
+            <!-- Einstein -->
+            <figure class="gallery-item">
+                <div class="frame">
+                    <img src="images/einstein.jpg" alt="Albert Einstein">
+                </div>
+                <figcaption>
+                    <span class="name-en">Albert Einstein</span>
+                    <span class="name-cn">阿尔伯特·爱因斯坦</span>
+                    <span class="years">1879 – 1955</span>
+                    <span class="note">Relativity, quantum theory</span>
+                </figcaption>
+            </figure>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>
+            &copy; <span id="year"></span> Great Minds Gallery. Curated with admiration.
+        </p>
+    </footer>
 
     <script>
-        // 文章数据
-        const articles = [
-            { id: 1, title: "Hello World", date: "2025-06-08" },
-            // ...更多文章
-        ];
-
-        // 渲染文章列表
-        function renderArticleList() {
-            const articleList = document.getElementById('articleList');
-            articleList.innerHTML = articles.map(article => `
-                <li class="article-item">
-                    <a href="article.html?id=${article.id}" class="article-title">${article.title}</a>
-                    <span class="article-date">${article.date}</span>
-                </li>
-            `).join('');
-        }
-
-        renderArticleList();
+        // 自动更新年份
+        document.getElementById('year').textContent = new Date().getFullYear();
     </script>
 </body>
 </html>
