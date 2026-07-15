@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF 页码跳转 · 莫斯科谜题</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f0ebe4; color: #1e2a3a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .app { max-width: 800px; width: 100%; background: #fff; border-radius: 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.12); padding: 28px 30px 36px; }
+        h1 { font-size: 22px; font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .upload-area { background: #f8f5f0; border-radius: 16px; padding: 16px 20px; margin-bottom: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+        .upload-area label { background: #d4c9b8; padding: 6px 18px; border-radius: 40px; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.15s; }
+        .upload-area label:hover { background: #cbbcb0; }
+        .upload-area input[type="file"] { display: none; }
+        .upload-area .status { font-size: 14px; color: #4a5a6a; }
+        .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 22px; }
+        .controls label { font-weight: 500; font-size: 15px; }
+        .controls input[type="number"] { width: 70px; padding: 8px 12px; border-radius: 40px; border: 1px solid #d5cdc0; font-size: 15px; text-align: center; background: #fff; outline: none; }
+        .controls input[type="number"]:focus { border-color: #8a7a66; box-shadow: 0 0 0 3px rgba(138,122,102,0.15); }
+        .controls button { background: #1e2a3a; color: #fff; border: none; padding: 8px 24px; border-radius: 40px; font-size: 15px; font-weight: 500; cursor: pointer; transition: 0.15s; }
+        .controls button:hover { background: #2c3e4e; }
+        .controls button.secondary { background: #e8e0d6; color: #1e2a3a; }
+        .controls button.secondary:hover { background: #d5cdc0; }
+        .info { font-size: 14px; color: #6b7b8b; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
+        .pdf-container { background: #e8e0d6; border-radius: 16px; overflow: auto; position: relative; min-height: 500px; display: flex; justify-content: center; align-items: flex-start; padding: 10px; }
+        .pdf-container canvas { max-width: 100%; height: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.12); background: #fff; border-radius: 4px; }
+        .pdf-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 18px; color: #4a5a6a; }
+        .footer { margin-top: 18px; font-size: 13px; color: #9a8a7a; text-align: center; }
+        @media (max-width: 600px) { .app { padding: 16px; } .controls { flex-direction: column; align-items: stretch; } .controls input[type="number"] { width: 100%; } }
+    </style>
+</head>
+<body>
+<div class="app">
+    <h1>📖 莫斯科谜题 · 页码跳转</h1>
+
+    <div class="upload-area">
+        <label for="pdfUpload">📤 上传 PDF</label>
+        <input type="file" id="pdfUpload" accept=".pdf">
+        <span class="status" id="pdfStatus">自动加载中…</span>
+    </div>
+
+    <div class="controls">
+        <label for="puzzleId">题号：</label>
+        <input type="number" id="puzzleId" min="1" max="359" value="1">
+        <button id="jumpBtn">跳转</button>
+        <button id="todayBtn" class="secondary">📅 今日一题</button>
+        <button id="randomBtn" class="secondary">🎲 随机</button>
+    </div>
+
+    <div class="info">
+        <span id="pageInfo">当前页码：--</span>
+        <span id="totalInfo">共 359 题</span>
+    </div>
+
+    <div class="pdf-container" id="pdfContainer">
+        <div class="pdf-loading" id="pdfLoading">等待加载PDF…</div>
+        <canvas id="pdfCanvas"></canvas>
+    </div>
+
+    <div class="footer">所有页码已内置 · 点击跳转自动定位</div>
+</div>
+
+<script>
+// ============================================================
+//  完整页码映射（题号 → 页码）
+//  从原著中提取，共359条
+// ============================================================
+const PAGE_MAP = {
+1:11,2:12,3:12,4:12,5:12,6:13,7:13,8:13,9:14,10:14,
+11:15,12:15,13:15,14:16,15:16,16:16,17:16,18:17,19:17,20:17,
+21:18,22:18,23:19,24:19,25:20,26:20,27:20,28:21,29:21,30:22,
+31:23,32:23,33:24,34:24,35:24,36:25,37:25,38:25,39:25,40:26,
+41:26,42:26,43:27,44:28,45:28,46:28,47:28,48:29,49:29,50:30,
+51:30,52:30,53:31,54:31,55:32,56:32,57:33,58:33,59:33,60:34,
+61:34,62:34,63:34,64:35,65:35,66:35,67:35,68:35,69:36,70:36,
+71:36,72:36,73:36,74:36,75:37,76:37,77:37,78:38,79:38,80:38,
+81:39,82:39,83:39,84:39,85:39,86:40,87:41,88:42,89:43,90:44,
+91:44,92:44,93:45,94:45,95:45,96:45,97:45,98:46,99:46,100:47,
+101:47,102:48,103:48,104:49,105:50,106:51,107:52,108:53,109:54,110:54,
+111:55,112:55,113:56,114:56,115:56,116:56,117:57,118:57,119:58,120:58,
+121:59,122:62,123:63,124:63,125:63,126:64,127:64,128:64,129:64,130:64,
+131:65,132:65,133:65,134:65,135:66,136:66,137:66,138:66,139:67,140:67,
+141:68,142:68,143:68,144:68,145:69,146:70,147:70,148:70,149:71,150:71,
+151:72,152:72,153:72,154:73,155:73,156:73,157:73,158:74,159:74,160:75,
+161:75,162:75,163:76,164:76,165:76,166:76,167:77,168:78,169:79,170:79,
+171:80,172:80,173:80,174:81,175:81,176:81,177:82,178:82,179:82,180:82,
+181:83,182:83,183:84,184:84,185:84,186:84,187:85,188:85,189:85,190:86,
+191:86,192:86,193:87,194:87,195:88,196:89,197:93,198:93,199:93,200:94,
+201:94,202:95,203:95,204:97,205:97,206:98,207:99,208:100,209:100,210:102,
+211:102,212:103,213:104,214:104,215:104,216:104,217:106,218:106,219:107,220:107,
+221:108,222:108,223:108,224:109,225:109,226:109,227:109,228:110,229:110,230:110,
+231:111,232:111,233:111,234:111,235:112,236:112,237:112,238:112,239:113,240:113,
+241:113,242:113,243:114,244:114,245:114,246:114,247:115,248:115,249:115,250:115,
+251:116,252:116,253:117,254:117,255:118,256:118,257:118,258:119,259:119,260:119,
+261:120,262:120,263:120,264:121,265:121,266:122,267:122,268:122,269:123,270:123,
+271:124,272:124,273:126,274:126,275:126,276:127,277:127,278:127,279:127,280:128,
+281:129,282:129,283:129,284:130,285:130,286:130,287:131,288:131,289:132,290:132,
+291:133,292:134,293:136,294:137,295:137,296:139,297:141,298:141,299:142,300:142,
+301:142,302:143,303:143,304:143,305:144,306:145,307:146,308:146,309:146,310:146,
+311:146,312:147,313:147,314:147,315:148,316:148,317:149,318:149,319:150,320:150,
+321:151,322:151,323:152,324:153,325:154,326:154,327:154,328:155,329:156,330:156,
+331:157,332:158,333:161,334:161,335:162,336:163,337:163,338:164,339:166,340:167,
+341:168,342:169,343:170,344:171,345:172,346:172,347:174,348:175,349:178,350:181,
+351:182,352:183,353:185,354:185,355:185,356:186,357:187,358:188,359:190
+};
+
+// ============================================================
+//  应用逻辑
+// ============================================================
+const total = 359;
+let pdfDoc = null;
+let currentId = 1;
+
+const pdfStatus = document.getElementById('pdfStatus');
+const puzzleIdInput = document.getElementById('puzzleId');
+const jumpBtn = document.getElementById('jumpBtn');
+const todayBtn = document.getElementById('todayBtn');
+const randomBtn = document.getElementById('randomBtn');
+const pageInfo = document.getElementById('pageInfo');
+const pdfLoading = document.getElementById('pdfLoading');
+const canvas = document.getElementById('pdfCanvas');
+const pdfUpload = document.getElementById('pdfUpload');
+
+// 加载PDF（从URL或从File对象）
+function loadPDF(source) {
+    const loadingPromise = (source instanceof File) 
+        ? pdfjsLib.getDocument({ data: source }).promise
+        : pdfjsLib.getDocument(source).promise;
+    
+    pdfLoading.textContent = '⏳ 加载PDF中…';
+    pdfStatus.textContent = '⏳ 加载中…';
+    loadingPromise.then(pdf => {
+        pdfDoc = pdf;
+        pdfStatus.textContent = `✅ 已加载 (${pdf.numPages}页)`;
+        // 自动跳转到当前题号
+        jumpTo(currentId);
+    }).catch(err => {
+        pdfStatus.textContent = '❌ 加载失败';
+        pdfLoading.textContent = '❌ 加载失败，请检查文件是否存在或使用上传功能';
+        console.error(err);
+    });
+}
+
+// 自动加载同目录PDF（固定文件名）
+function autoLoadFromFile() {
+    const url = 'feismo.com-the-moscow-puzzles-359-mathematical-puzzlespdf-pr_bd738f9a90e1cfa8d9f5d4284c2d20df.pdf';
+    loadPDF(url);
+}
+
+// 上传事件
+pdfUpload.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    loadPDF(file);
+});
+
+// 跳转到指定题号
+function jumpTo(id) {
+    const page = PAGE_MAP[id];
+    if (!page) {
+        alert(`题号 ${id} 无对应页码`);
+        return;
+    }
+    if (!pdfDoc) {
+        alert('请先加载PDF文件（自动加载或手动上传）');
+        return;
+    }
+    currentId = id;
+    puzzleIdInput.value = id;
+    pageInfo.textContent = `当前页码：${page}`;
+    renderPage(page);
+}
+
+// 渲染页面
+function renderPage(pageNum) {
+    pdfLoading.style.display = 'block';
+    pdfLoading.textContent = '⏳ 渲染页面…';
+    pdfDoc.getPage(pageNum).then(page => {
+        const viewport = page.getViewport({ scale: 1.5 });
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise.then(() => {
+            pdfLoading.style.display = 'none';
+        });
+    }).catch(err => {
+        pdfLoading.textContent = '❌ 渲染失败';
+        console.error(err);
+    });
+}
+
+// 今日一题（从2025-01-01起循环）
+function getTodayId() {
+    const now = new Date();
+    const start = new Date(2025, 0, 1);
+    const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+    return ((diff % total) + total) % total + 1;
+}
+
+// 随机一题
+function getRandomId() {
+    return Math.floor(Math.random() * total) + 1;
+}
+
+// 按钮事件
+jumpBtn.addEventListener('click', function() {
+    const id = parseInt(puzzleIdInput.value, 10);
+    if (isNaN(id) || id < 1 || id > total) {
+        alert(`请输入 1 ~ ${total} 之间的题号`);
+        return;
+    }
+    jumpTo(id);
+});
+
+todayBtn.addEventListener('click', function() {
+    jumpTo(getTodayId());
+});
+
+randomBtn.addEventListener('click', function() {
+    jumpTo(getRandomId());
+});
+
+// 键盘回车
+puzzleIdInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') jumpBtn.click();
+});
+
+// 初始化：自动加载同目录PDF
+pdfStatus.textContent = '⏳ 自动加载同目录PDF…';
+autoLoadFromFile();
+</script>
+</body>
+</html>
